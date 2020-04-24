@@ -13,7 +13,7 @@
 <header>
     <nav class="navbar navbar-light bg-light" >
         {% if current_user.is_authenticated %}
-    <p align="left"><a class="navbar-brand" href="/news">{{ current_user.name }}</a>
+    <p align="left"><a class="navbar-brand" href="/user/{{current_user.name}}">{{ current_user.name }}</a>
         <a class="navbar-brand" href="/logout">выйти</a></p>
 {% else %}
     <p>
@@ -22,13 +22,13 @@
     </p>
 {% endif %}
         <a class="navbar-brand" href="/"><p><img src="static/img/marina.png" height=1%  alt='маринОЧКА'></p></a>
-        <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3Adb2f9f50d5e54412cb77ae44da9db9ce37676593d0581d367cc71e26ba70b509&amp;width=100%25&amp;height=240&amp;lang=ru_RU&amp;scroll=true"></script>
-    </nav>
+        <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3Adb2f9f50d5e54412cb77ae44da9db9ce37676593d0581d367cc71e26ba70b509&amp;source=constructor" width="100%" height="240" frameborder="0"></iframe>
+            </nav>
 </header>
 <!-- Begin page content -->
 <main role="main" class="container">
     {% block content %}{% endblock %}
 </main>
+<p align="right">(C) проект создан на базе html</p>
 </body>
-    (C) проект создан на базе html
 </html>

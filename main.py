@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from flask import Flask, make_response, request, session, render_template, abort, jsonify, url_for, send_from_directory, \
     flash
+import os
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from data import db_session
 from data.users import User
@@ -26,12 +27,22 @@ app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-@app.route("/")
+@app.route('/', methods=['GET', 'POST'])
 def index():
+    form = NewsForm()
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        news = News()
+        news.title = form.title.data
+        news.content = form.content.data
+        current_user.news.append(news)
+        session.merge(current_user)
+        session.commit()
+        return redirect('/')
     session = db_session.create_session()
     news = session.query(News)[::-1]
 
-    return render_template('index.html', news=news, ln=len(news))
+    return render_template('index.html', news=news, title='МаринОЧКА', form=form)
 
 
 @login_manager.user_loader
@@ -105,26 +116,14 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 
-@app.route('/user/<nickname>')
-@login_required
-def user():
-    return render_template('user.html')
 
-@app.route('/news', methods=['GET', 'POST'])
+@app.route('/user/<nickname>', methods=['GET', 'POST'])
 @login_required
-def add_news():
-    form = NewsForm()
-    if form.validate_on_submit():
-        session = db_session.create_session()
-        news = News()
-        news.title = form.title.data
-        news.content = form.content.data
-        current_user.news.append(news)
-        session.merge(current_user)
-        session.commit()
-        return redirect('/')
-    return render_template('news.html', title='Добавление новости',
-                           form=form)
+def user(nickname):
+
+    session = db_session.create_session()
+    news = session.query(News)[::-1]
+    return render_template('news.html', title=nickname, news=news)
 
 @app.route('/news/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -176,5 +175,5 @@ def news_delete(id):
 
 
 if __name__ == '__main__':
-    # main()
-    app.run(port="8080", host='127.0.0.1')
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
