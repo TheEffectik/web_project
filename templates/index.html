@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-
+{% block head %}
+    <link rel="stylesheet" type="text/css" href="style.css">
+{% endblock %}
 {% block content %}
 <title>Мариночка</title>
 <h1>Предложения</h1>
@@ -20,7 +22,7 @@
         </div>
         {% else %}
         <link rel="stylesheet" type="text/css" href="style.css">
-        <a href="/" class="a.button11">Купить</a>
+        <a href="/" class="button11">Купить</a>
     <div>
         </div>
     {% endif %}
