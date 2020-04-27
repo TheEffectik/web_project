@@ -23,7 +23,10 @@
             </p>
         {% endfor %}
     </p>
-   <p><input type="file" multiple name="f" accept='image/*,video/*' data-target="/static/img"></p>
+                               <div class="form-group">
+                                    <label for="photo">Выберите файл</label>
+                                    <input type="file" class="form-control-file" id="photo" name="file">
+                                </div>
     <p>{{ form.submit(type="submit", class="btn btn-primary", value="Добавить") }}</p>
     {{message}}
 </form>
@@ -45,7 +48,7 @@
             <a href="/news_delete/{{ item.id }}" class="btn btn-danger">Удалить</a>
         </div>
         {% else %}
-           <a href="/" class="button11">1000</a>
+           <a href="{{ item.user.about }}" class="button11">{{ item.user.about }}</a>
 
         <style>
                         a.button11 {

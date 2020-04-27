@@ -12,10 +12,10 @@ from loginform import LoginForm, psw
 from registerform import RegisterForm
 from data.news import News
 from flask_restful import reqparse, abort, Api, Resource
+from flask_socketio import SocketIO
 from data import news_api, user_api
 import random
-
-
+from PIL import Image
 
 
 db_session.global_init("db/users.sqlite")
@@ -29,20 +29,103 @@ login_manager.init_app(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    form = NewsForm()
-    if form.validate_on_submit():
+    if request.method == 'GET':
+        form = NewsForm()
+        if form.validate_on_submit():
+            session = db_session.create_session()
+            news = News()
+            news.title = form.title.data
+            news.content = form.content.data
+            current_user.news.append(news)
+            session.merge(current_user)
+            session.commit()
+            return redirect('/')
         session = db_session.create_session()
-        news = News()
-        news.title = form.title.data
-        news.content = form.content.data
-        current_user.news.append(news)
-        session.merge(current_user)
-        session.commit()
-        return redirect('/')
-    session = db_session.create_session()
-    news = session.query(News)[::-1]
+        news = session.query(News)[::-1]
 
-    return render_template('index.html', news=news, title='МаринОЧКА', form=form)
+        return render_template('index.html', news=news, title='Маринчка', form=form)
+    elif request.method == 'POST':
+        f = request.files['file']
+        im = Image.open(f.filename)
+        im.save('asdasd')
+        return "Форма отправлена"
+
+
+@app.route('/form_sample', methods=['POST', 'GET'])
+def form_sample():
+    if request.method == 'GET':
+        return f'''<!doctype html>
+                        <html lang="en">
+                          <head>
+                            <meta charset="utf-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                            <link rel="stylesheet"
+                            href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+                            integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+                            crossorigin="anonymous">
+                            <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
+                            <title>Пример формы</title>
+                          </head>
+                          <body>
+                            <h1>Форма для регистрации в суперсекретной системе</h1>
+                            <div>
+                                <form class="login_form" method="post">
+                                    <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Введите адрес почты" name="email">
+                                    <input type="password" class="form-control" id="password" placeholder="Введите пароль" name="password">
+                                    <div class="form-group">
+                                        <label for="classSelect">В каком вы классе</label>
+                                        <select class="form-control" id="classSelect" name="class">
+                                          <option>7</option>
+                                          <option>8</option>
+                                          <option>9</option>
+                                          <option>10</option>
+                                          <option>11</option>
+                                        </select>
+                                     </div>
+                                    <div class="form-group">
+                                        <label for="about">Немного о себе</label>
+                                        <textarea class="form-control" id="about" rows="3" name="about"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="photo">Приложите фотографию</label>
+                                        <input type="file" class="form-control-file" id="photo" name="file">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="form-check">Укажите пол</label>
+                                        <div class="form-check">
+                                          <input class="form-check-input" type="radio" name="sex" id="male" value="male" checked>
+                                          <label class="form-check-label" for="male">
+                                            Мужской
+                                          </label>
+                                        </div>
+                                        <div class="form-check">
+                                          <input class="form-check-input" type="radio" name="sex" id="female" value="female">
+                                          <label class="form-check-label" for="female">
+                                            Женский
+                                          </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-check">
+                                        <input type="checkbox" class="form-check-input" id="acceptRules" name="accept">
+                                        <label class="form-check-label" for="acceptRules">Готов быть добровольцем</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Записаться</button>
+                                </form>
+                            </div>
+                          </body>
+                        </html>'''
+    elif request.method == 'POST':
+        print(request.form['email'])
+        print(request.form['password'])
+        print(request.form['class'])
+        try:
+            print(request.form['file'].read())
+        except:
+            print(request.form)
+        print(request.form['about'])
+        print(request.form['accept'])
+        print(request.form['sex'])
+        return "Форма отправлена"
 
 
 @login_manager.user_loader
@@ -167,11 +250,35 @@ def news_delete(id):
         abort(404)
     return redirect('/')
 
+'''
+@app.route('/chat')
+def chat():
+    Chat()
 
-'''def main():
+def main():
     app.register_blueprint(user_api.blueprint)
     app.register_blueprint(news_api.blueprint)
-    app.run()'''
+    app.run()
+
+
+@app.route('text', namespace='/chat')
+def text(message):
+    """Sent by a client when the user entered a new message.
+    The message is sent to all people in the room."""
+    room = session.get('room')
+    emit('message', {'msg': session.get('name') + ':' + message['msg']}, room=room)
+
+@app.route('/chat')
+def chat():
+    """Chat room. The user's name and room must be stored in
+    the session."""
+    name = session.get('name', '')
+    room = session.get('room', '')
+    if name == '' or room == '':
+        return redirect(url_for('.index'))
+    return render_template('chat.html', name=name, room=room)
+'''
+
 
 
 if __name__ == '__main__':

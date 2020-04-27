@@ -18,4 +18,5 @@ class News(SqlAlchemyBase):
 
     user_id = sqlalchemy.Column(sqlalchemy.Integer, 
                                 sqlalchemy.ForeignKey("users.id"))
+    54
     user = orm.relation('User')
