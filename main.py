@@ -282,7 +282,9 @@ def chat():
     return render_template('chat.html', name=name, room=room)
 '''
 
-
+@app.route('/about_us')
+def about_us():
+    return render_template('about_us.html')
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
