@@ -1,4 +1,4 @@
-    <!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -7,6 +7,7 @@
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/main.css" />
     <title>{{title}}</title>
 </head>
 <body>
@@ -29,6 +30,11 @@
 <main role="main" class="container">
     {% block content %}{% endblock %}
 </main>
-<p align="right">(C) проект создан на базе html</p>
+<!-- Footer -->
+            <footer id="footer">
+                <div class="copyright">
+                    &copy; Мариночка. Дизайн: Вадим, Андрюха, Андрей.
+                </div>
+            </footer>
 </body>
 </html>

@@ -29,26 +29,28 @@ login_manager.init_app(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'GET':
-        form = NewsForm()
-        if form.validate_on_submit():
-            session = db_session.create_session()
-            news = News()
-            news.title = form.title.data
-            news.content = form.content.data
-            current_user.news.append(news)
-            session.merge(current_user)
-            session.commit()
-            return redirect('/')
+    form = NewsForm()
+    if form.validate_on_submit():
         session = db_session.create_session()
-        news = session.query(News)[::-1]
+        news = News()
+        news.title = form.title.data
+        news.content = form.content.data
+        current_user.news.append(news)
+        session.merge(current_user)
+        session.commit()
+        return redirect('/')
+    session = db_session.create_session()
+    news = session.query(News)[::-1]
+    return render_template('index.html', news=news, title='Маринчка', form=form)
 
-        return render_template('index.html', news=news, title='Маринчка', form=form)
-    elif request.method == 'POST':
+    '''elif request.method == 'POST':
         f = request.files['file']
+        image = request.files.get('image')
+        _, ext = os.path.splitext(image.filename)
+        print(_, ext)
         im = Image.open(f.filename)
         im.save('asdasd')
-        return "Форма отправлена"
+        return "Форма отправлена"'''
 
 
 @app.route('/form_sample', methods=['POST', 'GET'])
@@ -190,7 +192,8 @@ def reqister():
                                    message="Такое имя уже занято")
         user = User(
             name=form.name.data,
-            email=form.email.data
+            email=form.email.data,
+            about=form.about.data
         )
         user.set_password(form.password.data)
         session.add(user)
