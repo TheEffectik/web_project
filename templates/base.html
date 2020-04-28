@@ -13,7 +13,7 @@
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-light bg-light" >
+    <nav class="navbar navbar-blue bg-blue" >
         {% if current_user.is_authenticated %}
     <p align="left"><a class="navbar-brand" href="/user/{{current_user.name}}">{{ current_user.name }}</a>
         <a class="navbar-brand" href="/logout">выйти</a></p>
@@ -32,7 +32,7 @@
     {% block content %}{% endblock %}
 </main>
 <!-- Footer -->
-            <footer class="footer">
+            <footer id="footer">
                 <div class="copyright">
                     &copy; <a href="/about_us">Мариночка. Дизайн: Вэльчик, Андрюха, Cтепчик.</a>
                 </div>
