@@ -186,6 +186,10 @@ def reqister():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой адрес почты уже занят")
+        if form.about.data[:14] not in ['https://vk.com']:
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                   message="Вроде нет такой соц сети")
         if session.query(User).filter(User.name == form.name.data).first():
             return render_template('register.html', title='Регистрация',
                                    form=form,
@@ -209,7 +213,7 @@ def user(nickname):
 
     session = db_session.create_session()
     news = session.query(News)[::-1]
-    return render_template('news.html', title=nickname, news=news)
+    return render_template('user.html', title=nickname, news=news)
 
 @app.route('/news/<int:id>', methods=['GET', 'POST'])
 @login_required

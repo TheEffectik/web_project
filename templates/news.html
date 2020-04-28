@@ -1,79 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if current_user.name == title%}
-<form>
-<h1>Добавление магазина</h1>
+<h1>Редактировать объявление</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    {{ form.csrf_token }}
+    <p>
+        {{ form.title.label }}<br>
+        {{ form.title(class="form-control") }}<br>
+        {% for error in form.title.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.content.label }}<br>
+        {{ form.content(class="form-control") }}<br>
+        {% for error in form.content.errors %}
+            <p content="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
 </form>
-<form><h1>Ваши предложения</h1></form>
-{% else %}
-<h1>Предложения {{ title }}</h1>
-{% endif %}
-{% for item in news %}
-{% if item.user.name == title %}
-<div class="col-md6 border rounded">
-    <h2>{{item.title}}</h2>
-    <div>
-        {{item.content}}
-    </div>
-    <div>
-        Автор - <a href="user/{{item.user.name}}">{{item.user.name}}</a>, Дата написания - {{item.created_date}}
-    </div>
-    {% if current_user.is_authenticated %}
-    {% if current_user == item.user %}
-        <div>
-            <a href="/news/{{ item.id }}" class="btn btn-warning">Изменить</a>
-            <a href="/news_delete/{{ item.id }}" class="btn btn-danger">Удалить</a>
-        </div>
-        {% else %}
-           <a href="/" class="button11">1000</a>
-
-        <style>
-                        a.button11 {
-                  position: relative;
-                  z-index: 1;
-                  color: black;
-                  font-size: 100%;
-                  font-weight: 7000;
-                  text-decoration: none;
-                  padding: .25em .5em;
-                }
-                a.button11:after {
-                  content: "Купить";
-                  position: absolute;
-                  z-index: -1;
-                  top: -2px;
-                  bottom: -2px;
-                  left: -2px;
-                  width: calc(100% + 6*(1em*90/135) - 2px*2*2);
-                  text-align: right;
-                  color: #fff;
-                  font-size: 90%;
-                  padding: .25em .5em;
-                  border-radius: 5px;
-                  border: 2px solid #c61e40;
-                  -webkit-transform: skewX(-10deg);
-                  transform: skewX(-10deg);
-                  background: linear-gradient(#d4536d, #c61e40) no-repeat 100% 0;
-                  background-size: calc(6*(1em*90/135) + .5em) 100%;
-                  box-shadow: inset calc(-6*(1em*90/135) - .5em) 0 rgba(255,255,255,0);
-                  transition: .3s;
-                }
-                a.button11:hover:after {
-                  box-shadow: inset calc(-6*(1em*90/135) - .5em) 0 rgba(255,255,255,.2);
-                }
-                a.button11:active:after {
-                  background-image: linear-gradient(#c61e40, #d4536d);
-                }
-    </style>
-
-    <div>
-        </div>
-    {% endif %}
-    {% else %}
-    <a href="/login">Для покупки нужно авторизоваться</a>
-{% endif %}
-</div>
-{% endif %}
-{% endfor %}
 {% endblock %}
