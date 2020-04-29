@@ -26,109 +26,49 @@ app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+social_networks = ['https://vk.com']
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    global visits_count
     form = NewsForm()
     if form.validate_on_submit():
         session = db_session.create_session()
         news = News()
         news.title = form.title.data
         news.content = form.content.data
+        news.count = form.count.data
         current_user.news.append(news)
         session.merge(current_user)
         session.commit()
         return redirect('/')
     session = db_session.create_session()
     news = session.query(News)[::-1]
-    return render_template('index.html', news=news, title='Маринчка', form=form)
+    visits_count = int(request.cookies.get("index", 0))
+    if visits_count:
+        res = make_response(render_template('index.html', news=news, title='Маринчка', form=form))
+        res.set_cookie("index", str(visits_count + 1),
+                       max_age=60 * 60 * 24 * 365 * 2)
+    else:
+        res = make_response(render_template('about_us.html', news=news, title='Маринчка', form=form))
+        res.set_cookie("index", str(visits_count + 1),
+                       max_age=60 * 60 * 24 * 365 * 2)
+    return res
 
-    '''elif request.method == 'POST':
-        f = request.files['file']
-        image = request.files.get('image')
-        _, ext = os.path.splitext(image.filename)
-        print(_, ext)
-        im = Image.open(f.filename)
-        im.save('asdasd')
-        return "Форма отправлена"'''
 
-
-@app.route('/form_sample', methods=['POST', 'GET'])
-def form_sample():
-    if request.method == 'GET':
-        return f'''<!doctype html>
-                        <html lang="en">
-                          <head>
-                            <meta charset="utf-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-                            <link rel="stylesheet"
-                            href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-                            integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-                            crossorigin="anonymous">
-                            <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
-                            <title>Пример формы</title>
-                          </head>
-                          <body>
-                            <h1>Форма для регистрации в суперсекретной системе</h1>
-                            <div>
-                                <form class="login_form" method="post">
-                                    <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Введите адрес почты" name="email">
-                                    <input type="password" class="form-control" id="password" placeholder="Введите пароль" name="password">
-                                    <div class="form-group">
-                                        <label for="classSelect">В каком вы классе</label>
-                                        <select class="form-control" id="classSelect" name="class">
-                                          <option>7</option>
-                                          <option>8</option>
-                                          <option>9</option>
-                                          <option>10</option>
-                                          <option>11</option>
-                                        </select>
-                                     </div>
-                                    <div class="form-group">
-                                        <label for="about">Немного о себе</label>
-                                        <textarea class="form-control" id="about" rows="3" name="about"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="photo">Приложите фотографию</label>
-                                        <input type="file" class="form-control-file" id="photo" name="file">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="form-check">Укажите пол</label>
-                                        <div class="form-check">
-                                          <input class="form-check-input" type="radio" name="sex" id="male" value="male" checked>
-                                          <label class="form-check-label" for="male">
-                                            Мужской
-                                          </label>
-                                        </div>
-                                        <div class="form-check">
-                                          <input class="form-check-input" type="radio" name="sex" id="female" value="female">
-                                          <label class="form-check-label" for="female">
-                                            Женский
-                                          </label>
-                                        </div>
-                                    </div>
-                                    <div class="form-group form-check">
-                                        <input type="checkbox" class="form-check-input" id="acceptRules" name="accept">
-                                        <label class="form-check-label" for="acceptRules">Готов быть добровольцем</label>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Записаться</button>
-                                </form>
-                            </div>
-                          </body>
-                        </html>'''
-    elif request.method == 'POST':
-        print(request.form['email'])
-        print(request.form['password'])
-        print(request.form['class'])
-        try:
-            print(request.form['file'].read())
-        except:
-            print(request.form)
-        print(request.form['about'])
-        print(request.form['accept'])
-        print(request.form['sex'])
-        return "Форма отправлена"
-
+@app.route("/cookie_test")
+def cookie_test():
+    visits_count = int(request.cookies.get("visits_count", 0))
+    if visits_count:
+        res = make_response(f"Вы пришли на эту страницу {visits_count + 1} раз")
+        res.set_cookie("visits_count", str(visits_count + 1),
+                       max_age=60 * 60 * 24 * 365 * 2)
+    else:
+        res = make_response(
+            "Вы пришли на эту страницу в первый раз за последние 2 года")
+        res.set_cookie("visits_count", '1',
+                       max_age=60 * 60 * 24 * 365 * 2)
+    return res
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -157,6 +97,7 @@ def login():
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
 
+'''
 @app.route('/login_2', methods=['GET', 'POST'])
 def login_2(mail):
     a = ''
@@ -166,7 +107,7 @@ def login_2(mail):
     form = psw()
     if form.validate_on_submit():
         return redirect('/')
-    return render_template('login_2.html', title='Авторизация', form=form)
+    return render_template('login_2.html', title='Авторизация', form=form)'''
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -175,6 +116,7 @@ def uploaded_file(filename):
 
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
+    global social_networks
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
@@ -186,10 +128,14 @@ def reqister():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой адрес почты уже занят")
-        if form.about.data[:14] not in ['https://vk.com']:
+        if form.about.data[:14] not in social_networks:
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Вроде нет такой соц сети")
+        if session.query(User).filter(User.about == form.about.data).first():
+            return render_template('register.html', title='Регистрация',
+                                   form=form,
+                                    message="Аккаунт с данной соц сетью существует")
         if session.query(User).filter(User.name == form.name.data).first():
             return render_template('register.html', title='Регистрация',
                                    form=form,
@@ -207,10 +153,9 @@ def reqister():
 
 
 
-@app.route('/user/<nickname>', methods=['GET', 'POST'])
 @login_required
+@app.route('/user/<nickname>')
 def user(nickname):
-
     session = db_session.create_session()
     news = session.query(News)[::-1]
     return render_template('user.html', title=nickname, news=news)
@@ -291,5 +236,4 @@ def about_us():
     return render_template('about_us.html')
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(port=8080, host='127.0.0.1')

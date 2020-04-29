@@ -1,36 +1,91 @@
 a.button11 {
   position: relative;
   z-index: 1;
-  color: black;
-  font-size: 135%;
-  font-weight: 700;
+  color: white;
+   font: 400 18px tahoma;
+  font-size: 100%;
+  font-weight: 1;
+   background-image: linear-gradient(to left,transparent,transparent 50%,#00c6ff 50%,#00c6ff);
   text-decoration: none;
-  padding: .25em .5em;
+  padding: .22em;
 }
 a.button11:after {
   content: "Купить";  /* здесь 6 букв */
-  position: absolute;
-  z-index: -1;
-  top: -2px;
-  bottom: -2px;
-  left: -2px;
-  width: calc(100% + 6*(1em*90/135) - 2px*2*2);  /* где 6*(1em*90/135), где 6 - это 6 букв, 90 - это font-size after, а 135 - это font-size родителя */
-  text-align: right;
-  color: #fff;
-  font-size: 90%;
-  padding: .25em .5em;
-  border-radius: 5px;
-  border: 2px solid #c61e40;
-  -webkit-transform: skewX(-10deg);
-  transform: skewX(-10deg);
-  background: linear-gradient(#d4536d, #c61e40) no-repeat 100% 0;
-  background-size: calc(6*(1em*90/135) + .5em) 100%;
-  box-shadow: inset calc(-6*(1em*90/135) - .5em) 0 rgba(255,255,255,0);
-  transition: .3s;
+  color:#00c6ff;
+ padding: 1px 20px;
+ width:120px;
+ text-decoration:none;
+ text-align:center;
+ margin:100px auto;
+ background-image: linear-gradient(to left,transparent,transparent 50%,#00c6ff 50%,#00c6ff);
+ background-position: 100% 0;
+ background-size: 200% 100%;
+ transition: all .25s ease-in;
+ font: 400 18px tahoma;
+ border: 1px solid #00C6FF;
 }
 a.button11:hover:after {
-  box-shadow: inset calc(-6*(1em*90/135) - .5em) 0 rgba(255,255,255,.2);
+ background-position: 0 0;
+color:#fff;
 }
 a.button11:active:after {
   background-image: linear-gradient(#c61e40, #d4536d);
+}
+
+div.aftor{
+    padding-bottom: 10px;
+}
+.ccd {
+    height: 95px;
+    overflow: hidden;
+    width: 60%;
+    margin:0 auto;
+    position: relative;
+}
+
+a.ddott {
+    margin:0 auto;
+    display: block;
+    line-height: 50px;
+    height: 50px;
+    width: 24%;
+    overflow: hidden;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    text-shadow: 0 100px 0 #FFF,1px 76px 10px #000;
+    color: #FFF;
+    background: #5D8EC7;
+    border-right: 2px solid #FFF;
+    border-left: 2px solid #FFF;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+
+}
+a.ddott:hover {
+    text-shadow: 0 50px 0 #FFF, 1px 51px 20px #FFF;
+    margin-top: -50px;
+    height: 100px;
+    background: #222;
+}
+a.glo{
+ color:#00c6ff;
+ padding: 1px 20px;
+ width:120px;
+ text-decoration:none;
+ text-align:center;
+ margin:100px auto;
+ background-image: linear-gradient(to left,transparent,transparent 50%,#00c6ff 50%,#00c6ff);
+ background-position: 100% 0;
+ background-size: 200% 100%;
+ transition: all .25s ease-in;
+ font: 400 18px tahoma;
+ border: 1px solid #00C6FF;
+}
+a.glo:hover {
+background-position: 0 0;
+color:#fff;
 }

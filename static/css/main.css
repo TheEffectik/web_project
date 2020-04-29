@@ -23,7 +23,7 @@
 	}
 
 	body {
-		line-height: 1;
+		line-height: 0;
 	}
 
 	ol, ul {
@@ -2528,7 +2528,6 @@
 	}
 
 	header {
-		margin-bottom: 1em;
 	}
 
 		header p {

@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
+    <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3Adb2f9f50d5e54412cb77ae44da9db9ce37676593d0581d367cc71e26ba70b509&amp;source=constructor" width="100%" height="240" frameborder="0"></iframe>
+<main role="main" class="container">
 {% if current_user.is_authenticated %}
-
 <h1>Добавить предложение</h1>
 <form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
@@ -24,6 +25,15 @@
             </p>
         {% endfor %}
     </p>
+    <p>
+        {{ form.count.label }}<br>
+        {{ form.count(class="form-control") }}<br>
+        {% for error in form.count.errors %}
+            <p content="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
                                <div class="form-group">
                                     <label for="photo">Выберите файл</label>
                                     <input type="file" class="form-control-file" id="photo" name="file">
@@ -34,22 +44,24 @@
 {% endif %}
 <h1>Предложения</h1>
 {% for item in news%}
-<div class="col-md6 border rounded">
+<div class="col-md1 border rounded">
     <h2>{{item.title}}</h2>
     <div>
         {{item.content}}
     </div>
-    <div>
-        Автор - <a href="user/{{item.user.name}}">{{item.user.name}}</a>, Дата написания - {{item.created_date}}
+    <div class="aftor">
+        Автор - <a href="/user/{{item.user.name}}">{{item.user.name}}</a>, Дата написания - {{item.created_date}}
     </div>
     {% if current_user.is_authenticated %}
     {% if current_user == item.user %}
         <div>
-            <a href="/news/{{ item.id }}" class="btn btn-warning">Изменить</a>
-            <a href="/news_delete/{{ item.id }}" class="btn btn-danger">Удалить</a>
+            <a href="/news/{{ item.id }}" class="glo">Изменить</a>
+            <a href="/news_delete/{{ item.id }}" class="glo">Удалить</a>
         </div>
         {% else %}
-           <a href="{{ item.user.about }}" class="button11">{{ item.user.about }}</a>
+           <a href="{{ item.user.about }}" class="button11">{{ item.count }}</a>
+    <style>a.button11{width: calc(100% + {{ item.count.size }}*(1em*90/135) - 2px*2*2);
+    }</style>
     <div>
         </div>
     {% endif %}
@@ -59,4 +71,5 @@
 {% endif %}
 </div>
 {% endfor %}
+    </main>
 {% endblock %}

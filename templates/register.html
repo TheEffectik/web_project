@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<main role="main" class="container">
 <h1>Регистрация</h1>
 <form action="" method="post">
     {{ form.hidden_tag() }}
@@ -44,14 +45,14 @@
     <p>
         {{ form.about.label }}<br>
         {{ form.about(class="form-control") }}<br>
-    <p class="alert alert-danger" role="alert">Не та соц.сеть</p>
-        {% for error in form.about.errors %}
+        {% for error in form.about.abot %}
             <p class="alert alert-danger" role="alert">
-                {{ error }}
+                {{ abot }}
             </p>
         {% endfor %}
     </p>
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
+    *{{message}}
 </form>
+</main>
 {% endblock %}
