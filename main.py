@@ -16,17 +16,26 @@ from flask_socketio import SocketIO
 from data import news_api, user_api
 import random
 from PIL import Image
+from werkzeug.utils import secure_filename
 
 
 db_session.global_init("db/users.sqlite")
 app = Flask(__name__)
 
+UPLOAD_FOLDER = 'static/img'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 social_networks = ['https://vk.com']
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -38,6 +47,11 @@ def index():
         news.title = form.title.data
         news.content = form.content.data
         news.count = form.count.data
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], str(session.query(News)[-1].id + 1)) + filename[-4:])
+            news.filename = '/static/img/' + str(session.query(News)[-1].id + 1) + str(filename[-4:])
         current_user.news.append(news)
         session.merge(current_user)
         session.commit()

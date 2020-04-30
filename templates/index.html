@@ -34,10 +34,9 @@
             </p>
         {% endfor %}
     </p>
-                               <div class="form-group">
-                                    <label for="photo">Выберите файл</label>
-                                    <input type="file" class="form-control-file" id="photo" name="file">
-                                </div>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+        <input type=submit value=Upload></form>
     <p>{{ form.submit(type="submit", class="btn btn-primary", value="Добавить") }}</p>
     {{message}}
 </form>
@@ -49,6 +48,8 @@
     <div>
         {{item.content}}
     </div>
+    <ul id="inline-popups">
+        <li><a href="#test-popup" data-effect="mfp-zoom-in"><img src="{{item.filename}}" width="100px" height="100px"  alt='У предложения нет изображения'></a></li></ul>
     <div class="aftor">
         Автор - <a href="/user/{{item.user.name}}">{{item.user.name}}</a>, Дата написания - {{item.created_date}}
     </div>
@@ -60,7 +61,7 @@
         </div>
         {% else %}
            <a href="{{ item.user.about }}" class="button11">{{ item.count }}</a>
-    <style>a.button11{width: calc(100% + {{ item.count.size }}*(1em*90/135) - 2px*2*2);
+    <style>a.button11{width: calc(100% + 6*(1em*90/135) - 2px*2*2);
     }</style>
     <div>
         </div>
