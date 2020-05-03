@@ -19,7 +19,6 @@ from registerform import RegisterForm
 from data.news import News
 from flask_restful import reqparse, abort, Api, Resource
 from flask_socketio import SocketIO
-from data import news_api, user_api
 import random
 from PIL import Image
 from werkzeug.utils import secure_filename
