@@ -1,16 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div>
-    {{ form.csrf_token }}
-</div>
-{% for field in form if field.name != 'csrf_token' %}
-<div>
-    {{ field.label() }}
-    {{ field() }}
-    {% for error in field.errors %}
-    <div class="error">{{ error }}</div>
-    {% endfor %}
-</div>
-{% endfor %}
+<main role="main" class="container">
+{{ form.password.label }}
+{{ form.password(class="form-control") }}<br>
+<p>{{ form.submit(type="submit", class="btn btn-primary", value="Проверить") }}</p>
+    {{message}}
+</main>
 {% endblock %}

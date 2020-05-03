@@ -5,6 +5,9 @@
 {% if current_user.name == title%}
 <form>
 <h1>Добавление магазина</h1>
+    <label for="about">Введите адресс</label>
+                                        <textarea class="form-control" id="about" rows="3" name="about"></textarea>
+    <button type="submit">Записаться</button>
 </form>
 <form><h1>Ваши предложения</h1></form>
 {% else %}
@@ -23,11 +26,12 @@
     {% if current_user.is_authenticated %}
     {% if current_user == item.user %}
         <div>
-            <a href="/news/{{ item.id }}" class="btn btn-warning">Изменить</a>
-            <a href="/news_delete/{{ item.id }}" class="btn btn-danger">Удалить</a>
+            <a href="/news/{{ item.id }}" class="glo">Изменить</a>
+            <a href="/news_delete/{{ item.id }}" class="glo">Удалить</a>
         </div>
         {% else %}
-           <a href="{{item.user.about}}" class="button11">{{ item.count }}</a>
+           <a class="glo_1">{{ item.count }}</a>
+           <a href="{{ item.user.about }}" class="glo">Купить</a>
     <div>
         </div>
     {% endif %}

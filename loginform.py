@@ -12,5 +12,5 @@ class LoginForm(FlaskForm):
 
 
 class psw(FlaskForm):
-    username = StringField('ВВедите код, отправленный на почту', validators=[DataRequired()])
+    password = StringField('ВВедите код, отправленный на почту', validators=[DataRequired()])
     submit = SubmitField('Подтвердить')

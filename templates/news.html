@@ -23,7 +23,25 @@
             </p>
         {% endfor %}
     </p>
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    <p>
+        {{ form.count.label }}<br>
+        {{ form.count(class="form-control") }}<br>
+        {% for error in form.count.errors %}
+            <p content="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    {% if form.filename != None %}
+        <ul id="image-popups">
+        <li>
+            {{ form.count }}
+            {{ form.filename }}
+            <a href="{{form.filename}}" data-effect="mfp-zoom-in"><img src="{{ form.filename }}" width="100px" height="100px" ></a>
+        </li></ul>
+    {% endif %}
+        <input type=file name=file multiple accept="image/*,image/jpeg">
+    <p>{{ form.submit(type="submit", class="button11") }}</p>
     {{message}}
 </form>
 {% endblock %}

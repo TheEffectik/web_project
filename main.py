@@ -1,7 +1,13 @@
+import flask
 from django.shortcuts import redirect
 from flask import Flask, make_response, request, session, render_template, abort, jsonify, url_for, send_from_directory, \
     flash
 import os
+import vk_api
+from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
+import random
+from datetime import datetime
+from mediawiki import MediaWiki
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from data import db_session
 from data.users import User
@@ -69,21 +75,6 @@ def index():
                        max_age=60 * 60 * 24 * 365 * 2)
     return res
 
-
-@app.route("/cookie_test")
-def cookie_test():
-    visits_count = int(request.cookies.get("visits_count", 0))
-    if visits_count:
-        res = make_response(f"Вы пришли на эту страницу {visits_count + 1} раз")
-        res.set_cookie("visits_count", str(visits_count + 1),
-                       max_age=60 * 60 * 24 * 365 * 2)
-    else:
-        res = make_response(
-            "Вы пришли на эту страницу в первый раз за последние 2 года")
-        res.set_cookie("visits_count", '1',
-                       max_age=60 * 60 * 24 * 365 * 2)
-    return res
-
 @login_manager.user_loader
 def load_user(user_id):
     session = db_session.create_session()
@@ -111,22 +102,23 @@ def login():
                                form=form)
     return render_template('login.html', title='Авторизация', form=form)
 
-'''
 @app.route('/login_2', methods=['GET', 'POST'])
-def login_2(mail):
+def login_2():
     a = ''
     for i in range(5):
         a += str(random.randint(0, 9))
     print(a)
     form = psw()
     if form.validate_on_submit():
-        return redirect('/')
-    return render_template('login_2.html', title='Авторизация', form=form)'''
+        if str(request.form['psw']) == a:
+            session = db_session.create_session()
+            print(user)
+            session.add(user)
+            session.commit()
+        else:
+            return render_template('login_2.html', title='Авторизация', form=form, message='Неверный код')
+    return render_template('login_2.html', title='Авторизация', form=form)
 
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
 
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
@@ -162,17 +154,33 @@ def reqister():
         user.set_password(form.password.data)
         session.add(user)
         session.commit()
-        return redirect('/')
+        return redirect('/login_2')
     return render_template('register.html', title='Регистрация', form=form)
 
 
 
 @login_required
-@app.route('/user/<nickname>')
+@app.route('/user/<nickname>', methods=['GET', 'POST'])
 def user(nickname):
-    session = db_session.create_session()
-    news = session.query(News)[::-1]
-    return render_template('user.html', title=nickname, news=news)
+    if request.method == 'GET':
+        session = db_session.create_session()
+        news = session.query(News)[::-1]
+        return render_template('user.html', title=nickname, news=news)
+    elif request.method == 'POST':
+        print('sdsdsd')
+        vk(request.form['about'])
+
+def vk(message):
+    print('bruh')
+    vk_session = vk_api.VkApi(
+        token='46ee90b460cc009558a9acd1e04ca649ce10b2ec550e9c52418d47beca68909c49bd72fefffd2d9daf5fd')
+
+    longpoll = VkBotLongPoll(vk_session, 193282564)
+    vk = vk_session.get_api()
+    vk.messages.send(user_id=226460410,
+                    message=f"{message}",
+                    random_id=random.randint(0, 2 ** 64))
+
 
 @app.route('/news/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -186,6 +194,8 @@ def edit_news(id):
         if news:
             form.title.data = news.title
             form.content.data = news.content
+            form.count.data = news.count
+            form.count.filename = news.filename
         else:
             abort(404)
     if form.validate_on_submit():
@@ -196,6 +206,8 @@ def edit_news(id):
         if news:
             news.title = form.title.data
             news.content = form.content.data
+            form.count = form.count.data
+            form.filename = form.filename.data
             session.commit()
             return redirect('/')
         else:
@@ -215,35 +227,6 @@ def news_delete(id):
     else:
         abort(404)
     return redirect('/')
-
-'''
-@app.route('/chat')
-def chat():
-    Chat()
-
-def main():
-    app.register_blueprint(user_api.blueprint)
-    app.register_blueprint(news_api.blueprint)
-    app.run()
-
-
-@app.route('text', namespace='/chat')
-def text(message):
-    """Sent by a client when the user entered a new message.
-    The message is sent to all people in the room."""
-    room = session.get('room')
-    emit('message', {'msg': session.get('name') + ':' + message['msg']}, room=room)
-
-@app.route('/chat')
-def chat():
-    """Chat room. The user's name and room must be stored in
-    the session."""
-    name = session.get('name', '')
-    room = session.get('room', '')
-    if name == '' or room == '':
-        return redirect(url_for('.index'))
-    return render_template('chat.html', name=name, room=room)
-'''
 
 @app.route('/about_us')
 def about_us():
