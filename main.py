@@ -34,7 +34,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-social_networks = ['https://vk.com']
+social_networks = ['https://vk.com', 'https://t.me/']
 
 
 def allowed_file(filename):
