@@ -4,10 +4,9 @@ from flask import Flask, make_response, request, session, render_template, abort
     flash
 import os
 import vk_api
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
+from vk_api.bot_longpoll import VkBotLongPoll
 import random
 from datetime import datetime
-from mediawiki import MediaWiki
 from flask_login import LoginManager, login_user, current_user, login_required, logout_user
 from data import db_session
 from data.users import User
